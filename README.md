@@ -4,7 +4,8 @@ Sublime Text plugin  for handy work with SdlLogs.
 ## Installation
 
 ### Requirements
-This plugin requires at least Sublime Text 3 v.3176 or higher for best performance and correct syntax
+This plugin requires at least Python version 3.0.
+Also this plugin requires at least Sublime Text 3 v.3176 or higher for best performance and correct syntax
 
 1. Install YAML:  
 
