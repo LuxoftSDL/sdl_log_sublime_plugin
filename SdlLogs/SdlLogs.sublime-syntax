@@ -13,7 +13,7 @@ variables:
   path:          ' \/?[\w|\/]*\.(cc|cpp|h|hpp)'
   line:          ':\d* *'
   message:       '.*'
-  junk:          ' /(.*)/sdl_core/src/'
+  junk:          ' /(.*)/src/'
   thread_enter:  ' Enter'
   thread_exit:   ' Exit'
   app_mark:      'Application started!'

@@ -289,6 +289,17 @@ class LogSyntax:
             self.key_map = regex[self.Tags.KEY_MAP]
 
 
+syntax = LogSyntax()
+
+
+def plugin_loaded():
+    """
+    This function will be call when plugin is loaded
+    """
+    syntax.load_syntax(SettingsTags.NAME + SettingsTags.EXTENTION)
+    key = KeyMapRegex()
+    key.check_overriding_if_enable()
+
 def get_selected_text(self):
     """
     Return selected text from view.
@@ -436,13 +447,23 @@ class JumpToFileCommand(sublime_plugin.TextCommand):
         ERROR_MESSAGE = "File '{0}' not found. Maybe path to source files " \
                         "in your settings is incorrect or file really absent"
 
-        SDL_LOG_SOURCE = "/sdl_core/src/"
+        SDL_LOG_SOURCE = "/src/"
 
         FILE_NAME_WITHOUT_PATH_NAME = "(.+)(/|(] +))(.{0,}\\.(c|cc|h|cpp|hpp)):(\\d{1,})"
-        FULL_PATH_FILE = "(/.*)(/sdl_core/src/.{0,}\\.(c|cc|h|cpp|hpp)):(\\d{1,})"
+        FULL_PATH_FILE = "(/.*)(/src/.{0,}\\.(c|cc|h|cpp|hpp)):(\\d{1,})"
+
+
+        window = self.view.window()
+
+        def on_done(input_string):
+            self.text = input_string
+            self.view.settings().set(SettingsTags.SOURCE_PATH, input_string)
+
+
 
         # Check exist file in directory
         # file in directory have
+
         primaryPath_exist = re.search(
             FULL_PATH_FILE, self.view.substr(self.view.line(self.view.sel()[0])))
         # file in directory haven't
@@ -466,11 +487,11 @@ class JumpToFileCommand(sublime_plugin.TextCommand):
                     self, path_to_file, line, ERROR_MESSAGE.format(path_to_file))
         else:
             # Check option sourcePath empty or not
-            if self.view.settings().get(SettingsTags.SOURCE_PATH):
+            if self.view.settings().get(SettingsTags.SOURCE_PATH)
                 flagFind = False
                 file_name = path_not_exist.group(4)
                 path_to_file = self.view.settings().get(
-                    SettingsTags.SOURCE_PATH) + SDL_LOG_SOURCE
+                    SettingsTags.SOURCE_PATH)
 
                 for root, dirnames, filenames in walk(path_to_file):
                     for filename in fnmatch.filter(filenames, file_name):
@@ -483,9 +504,11 @@ class JumpToFileCommand(sublime_plugin.TextCommand):
                                       ERROR_MESSAGE.format(path_to_file))
                             break
                 if not flagFind:
+                    window.show_input_panel("Path to directory:", self.view.settings().get(SettingsTags.SOURCE_PATH), on_done, None, None)
                     sublime.error_message(
                         ERROR_MESSAGE.format(file_name))
             else:
+                window.show_input_panel("Path to directory:", self.view.settings().get(SettingsTags.SOURCE_PATH), on_done, None, None)
                 file_name = path_not_exist.group(4)
                 sublime.error_message(
                     ERROR_MESSAGE.format(file_name))
@@ -565,13 +588,4 @@ class TextInsertCommand(sublime_plugin.TextCommand):
                          "\n"+syntax.msg_string+"\n"+syntax.border_string+"\n")
 
 
-syntax = LogSyntax()
 
-
-def plugin_loaded():
-    """
-    This function will be call when plugin is loaded
-    """
-    syntax.load_syntax(SettingsTags.NAME + SettingsTags.EXTENTION)
-    key = KeyMapRegex()
-    key.check_overriding_if_enable()
